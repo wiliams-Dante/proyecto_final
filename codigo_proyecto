@@ -1,0 +1,148 @@
+#include <iostream>
+#include <cstdlib>
+using namespace std;
+
+class Menu {
+private:
+	string codigovuelo;
+	string origen;
+	string destino;
+	string fecha;
+	string hora;
+	string codigopasajero;
+	string nombrepasajero;
+	
+public:
+	void registrarVuelo();
+	void registrarPasajero();
+	void crearReserva();
+	void listarVuelos();
+	void listarPasajeros();
+	void listarReservas();
+	void menuPrincipal();
+	void buscarVuelo();
+	void buscarPasajero();
+};
+
+void Menu::registrarVuelo() {
+	system("cls");
+	cout << "Registrar nuevo vuelo:" << endl;
+	cout << "Codigo del vuelo: ";
+	cin >> codigovuelo;
+	cout << "Origen: ";
+	cin >> origen;
+	cout << "Destino: ";
+	cin >> destino;
+	cout << "Fecha (dia/mes/ano): ";
+	cin >> fecha;
+	cout << "Hora (hora/minuto): ";
+	cin >> hora;
+	
+	cout << endl << "Vuelo registrado correctamente" << endl;
+	cout << "Codigo: " << codigovuelo << endl;
+	cout << "Origen: " << origen << endl;
+	cout << "Destino: " << destino << endl;
+	cout << "Fecha: " << fecha << endl;
+	cout << "Hora: " << hora << endl;
+	
+	cout << "Presiona ENTER para volver al menu..." << endl;
+	cin.ignore();
+	cin.get();
+	system("cls");
+}
+
+void Menu::registrarPasajero() {
+	system("cls");
+	cout << "REGISTRAR NUEVO PASAJERO" << endl;
+	cout << "Codigo del pasajero: ";
+	cin >> codigopasajero;
+	cout << "Nombre completo: ";
+	cin.ignore();
+	getline(cin, nombrepasajero);
+	
+	cout << endl << "Pasajero registrado correctamente" << endl;
+	cout << "Codigo: " << codigopasajero << endl;
+	cout << "Nombre: " << nombrepasajero << endl;
+	
+	cout << "Presiona ENTER para volver al menu..." << endl;
+	cin.get();
+	system("cls");
+}
+
+void Menu::crearReserva() {
+
+}
+
+void Menu::listarVuelos() {
+
+}
+
+void Menu::listarPasajeros() {
+
+}
+
+void Menu::listarReservas() {
+
+}
+
+void Menu::buscarVuelo() {
+	
+}
+
+void Menu::buscarPasajero() {
+
+}
+
+void Menu::menuPrincipal() {
+	int opcion;
+	do {
+		cout << "AEROLINEA UCSP" << endl;
+		cout << "1. Registrar vuelo" << endl;
+		cout << "2. Registrar pasajero" << endl;
+		cout << "3. Crear reserva" << endl;
+		cout << "4. Listar vuelos" << endl;
+		cout << "5. Listar pasajeros" << endl;
+		cout << "6. Buscar vuelo" << endl;
+		cout << "7. Buscar pasajero" << endl;
+		cout << "8. Salir" << endl;
+		cout << "Opcion: ";
+		cin >> opcion;
+		
+		switch (opcion) {
+		case 1:
+			registrarVuelo();
+			break;
+		case 2:
+			registrarPasajero();
+			break;
+		case 3:
+			crearReserva();
+			break;
+		case 4:
+			listarVuelos();
+			break;
+		case 5:
+			listarPasajeros();
+			break;
+		case 6:
+			buscarVuelo();
+			break;
+		case 7:
+			buscarPasajero();
+			break;
+		case 8:
+			system("cls");
+			cout << "Saliendo del sistema..." << endl;
+			break;
+		default:
+			cout << "Opcion invalida. Intente nuevamente." << endl;
+			break;
+		}
+	} while (opcion != 8);
+}
+
+int main() {
+	Menu s1;
+	s1.menuPrincipal();
+	return 0;
+}
