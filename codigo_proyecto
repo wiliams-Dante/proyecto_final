@@ -1,148 +1,299 @@
 #include <iostream>
 #include <cstdlib>
+#include <string>
 using namespace std;
 
-class Menu {
+class DNI
+{
 private:
-	string codigovuelo;
-	string origen;
-	string destino;
-	string fecha;
-	string hora;
-	string codigopasajero;
-	string nombrepasajero;
-	
+    string nombres[5];
+    string apellidos[5];
+    string nacionalidades[5];
+    string sexos[5];
+    string codigos[5];
+
 public:
-	void registrarVuelo();
-	void registrarPasajero();
-	void crearReserva();
-	void listarVuelos();
-	void listarPasajeros();
-	void listarReservas();
-	void menuPrincipal();
-	void buscarVuelo();
-	void buscarPasajero();
+    DNI()
+    {
+
+        nombres[0] = "Gustavo Alonso";
+        apellidos[0] = "Moreno Ojeda";
+        nacionalidades[0] = "peruana";
+        sexos[0] = "M";
+        codigos[0] = "72385379";
+
+        nombres[1] = "Manuel Eduardo";
+        apellidos[1] = "Loaiza Fernadez";
+        nacionalidades[1] = "peruana";
+        sexos[1] = "M";
+        codigos[1] = "123";
+
+        nombres[2] = "Alvaro Henry";
+        apellidos[2] = "Mamani Aliaga";
+        nacionalidades[2] = "peruana";
+        sexos[2] = "M";
+        codigos[2] = "321";
+
+        nombres[3] = "Wiliams Yeferson";
+        apellidos[3] = "Taipe Huanca";
+        nacionalidades[3] = "peruana";
+        sexos[3] = "M";
+        codigos[3] = "456";
+
+        nombres[4] = "Luis Carlos";
+        apellidos[4] = "Unancha Chavez";
+        nacionalidades[4] = "peruana";
+        sexos[4] = "M";
+        codigos[4] = "4321";
+    }
+
+    // Verificamos si los datos existen
+    bool verificarDatos(string nombre, string apellido, string dni_codigo)
+    {
+        for(int i = 0; i < 5; i++)
+        {
+            if(nombres[i] == nombre && apellidos[i] == apellido && codigos[i] == dni_codigo)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 };
 
-void Menu::registrarVuelo() {
-	system("cls");
-	cout << "Registrar nuevo vuelo:" << endl;
-	cout << "Codigo del vuelo: ";
-	cin >> codigovuelo;
-	cout << "Origen: ";
-	cin >> origen;
-	cout << "Destino: ";
-	cin >> destino;
-	cout << "Fecha (dia/mes/ano): ";
-	cin >> fecha;
-	cout << "Hora (hora/minuto): ";
-	cin >> hora;
-	
-	cout << endl << "Vuelo registrado correctamente" << endl;
-	cout << "Codigo: " << codigovuelo << endl;
-	cout << "Origen: " << origen << endl;
-	cout << "Destino: " << destino << endl;
-	cout << "Fecha: " << fecha << endl;
-	cout << "Hora: " << hora << endl;
-	
-	cout << "Presiona ENTER para volver al menu..." << endl;
-	cin.ignore();
-	cin.get();
-	system("cls");
+class Pasaporte: public DNI
+{
+public:
+
+    bool solicitarPasaporte()
+    {
+        string nombre, apellido, dni_codigo;
+
+        cout << "\n=== VERIFICACION DE PASAPORTE ===" << endl;
+        cout << "Ingrese nombre: ";
+        cin.ignore(); // Limpiar el buffer del teclado
+        getline(cin, nombre); // sirve para leer los espacios
+        cout << "Ingrese apellido: ";
+        getline(cin, apellido);
+        cout << "Ingrese numero de DNI: ";
+        cin >> dni_codigo;
+
+        // Verificamos si existen los datos en la clase DNI
+        if(verificarDatos(nombre, apellido, dni_codigo))
+        {
+            cout << " ....... " << endl;
+            return true;
+
+        } else{
+            cout << "ERROR: Los datos ingresados no coinciden con los registros" << endl;
+
+            return false;
+        }
+    }
+};
+
+class VISA: public DNI
+{
+    // falta
+};
+
+class horas_dias
+{
+    // falta
+};
+
+class Pais
+{
+    private:
+        string nombre;
+        string aerolinea1;
+        string aerolinea2;
+        string aerolinea3;
+
+    public:
+
+        Pais(string n = "", string a1 = "", string a2 = "", string a3 = "")
+        {
+            nombre = n;
+            aerolinea1 = a1;
+            aerolinea2 = a2;
+            aerolinea3 = a3;
+        }
+
+        string getNombre()
+        {
+            return nombre;
+        }
+        string getAerolinea1()
+        {
+            return aerolinea1;
+        }
+        string getAerolinea2()
+        {
+            return aerolinea2;
+        }
+        string getAerolinea3()
+        {
+            return aerolinea3;
+        }
+
+        void mostrarAerolineas()
+        {
+            cout << "\n Aerolineas disponibles para " << nombre << ":" << endl;
+            cout << endl;
+            cout << "1. " << aerolinea1 << endl;
+            cout << "2. " << aerolinea2 << endl;
+            cout << "3. " << aerolinea3 << endl;
+        }
+};
+
+class Menu
+{
+    private:
+        Pais paises[7];
+        Pasaporte pasaporte;
+
+    public:
+        Menu();
+
+        void buscar_vuelo();
+        void comprar_vuelo();
+        void modificar_voleto();
+        void menuPrincipal();
+};
+
+
+Menu::Menu()
+{
+
+    paises[0] = Pais("Mexico", "Aeromexico", "Volaris", "Interjet");
+    paises[1] = Pais("España", "Iberia", "Vueling", "Air Europa");
+    paises[2] = Pais("Bolivia", "Boliviana de Aviacion", "Aerosur", "Amaszonas");
+    paises[3] = Pais("Canada", "Air Canada", "WestJet", "Air Transat");
+    paises[4] = Pais("Portugal", "TAP Portugal", "SATA Internacional", "EuroAtlantic");
+    paises[5] = Pais("Argentina", "Aerolineas Argentinas", "Flybondi", "JetSmart");
+    paises[6] = Pais("Colombia", "Avianca", "LATAM Colombia", "Viva Air");
 }
 
-void Menu::registrarPasajero() {
-	system("cls");
-	cout << "REGISTRAR NUEVO PASAJERO" << endl;
-	cout << "Codigo del pasajero: ";
-	cin >> codigopasajero;
-	cout << "Nombre completo: ";
-	cin.ignore();
-	getline(cin, nombrepasajero);
-	
-	cout << endl << "Pasajero registrado correctamente" << endl;
-	cout << "Codigo: " << codigopasajero << endl;
-	cout << "Nombre: " << nombrepasajero << endl;
-	
-	cout << "Presiona ENTER para volver al menu..." << endl;
-	cin.get();
-	system("cls");
+void Menu::buscar_vuelo()
+{
+    cout << "Funcion buscar_vuelo()" << endl;
 }
 
-void Menu::crearReserva() {
+void Menu::comprar_vuelo()
+{
+    int opcionPais, opcionAerolinea;
 
+    cout << "\n--- COMPRAR VUELO ---" << endl;
+    cout << "\n Seleccione el pais de destino:" << endl;
+
+    cout << "\n 1. Mexico" << endl;
+    cout << " 2. España" << endl;
+    cout << " 3. Bolivia" << endl;
+    cout << " 4. Canada" << endl;
+    cout << " 5. Portugal" << endl;
+    cout << " 6. Argentina" << endl;
+    cout << " 7. Colombia" << endl;
+    cout << endl;
+
+    cout << "Opcion: ";
+    cin >> opcionPais;
+
+    if(opcionPais < 1 || opcionPais > 7)
+
+    {
+        cout << "Opcion de pais no valida!" << endl;
+        return;
+    }
+
+    // Mostrar aerolíneas del país seleccionado
+    Pais paisSeleccionado = paises[opcionPais - 1];
+    paisSeleccionado.mostrarAerolineas();
+
+    cout << endl;
+    cout << " Seleccione la aerolinea (1-3): ";  cin >> opcionAerolinea;
+
+    // Validar selección de aerolínea
+    if(opcionAerolinea < 1 || opcionAerolinea > 3) {
+        cout << "Opcion de aerolinea no valida!" << endl;
+        return;
+    }
+
+    // Mostrar confirmación
+
+    string aerolineaSeleccionada;
+    switch(opcionAerolinea) {
+        case 1:
+            aerolineaSeleccionada = paisSeleccionado.getAerolinea1();
+            break;
+        case 2:
+            aerolineaSeleccionada = paisSeleccionado.getAerolinea2();
+            break;
+        case 3:
+            aerolineaSeleccionada = paisSeleccionado.getAerolinea3();
+            break;
+    }
+
+    cout << "\nSeleccion confirmada!" << endl;
+
+
+    // Aqui se verifica lo del pasaporte
+
+    if (pasaporte.solicitarPasaporte()) // si coincide
+    {
+
+        cout << " \nPuede continuar con su compra" << endl;
+
+    } else {
+
+        cout << "\nNo se pudo completar la compra debido a problemas con la verificación." << endl;
+    }
 }
 
-void Menu::listarVuelos() {
+void Menu::modificar_voleto()
+{
 
+    cout << "Opcion no disponible por el momento." << endl;
 }
 
-void Menu::listarPasajeros() {
+void Menu::menuPrincipal()
+{
+    int opcion;
 
+    do {
+        cout << "\n--- AEROLINEA UCSP ---" << endl;
+        cout << endl;
+        cout << "1. BUSCAR VUELO" << endl;
+        cout << "2. COMPRAR VUELO" << endl;
+        cout << "3. MODIFICAR VOLETO" << endl;
+        cout << "4. SALIR" << endl;
+        cout << endl;
+        cout << "Opcion: ";
+        cin >> opcion;
+
+        switch(opcion) {
+        case 1:
+            buscar_vuelo();
+            break;
+        case 2:
+            comprar_vuelo();
+            break;
+        case 3:
+            modificar_voleto();
+            break;
+        case 4:
+            cout << "Saliendo del sistema..." << endl;
+            break;
+        default:
+            cout << "Opcion no valida!" << endl;
+            break;
+        }
+    } while (opcion != 4);
 }
-
-void Menu::listarReservas() {
-
-}
-
-void Menu::buscarVuelo() {
-	
-}
-
-void Menu::buscarPasajero() {
-
-}
-
-void Menu::menuPrincipal() {
-	int opcion;
-	do {
-		cout << "AEROLINEA UCSP" << endl;
-		cout << "1. Registrar vuelo" << endl;
-		cout << "2. Registrar pasajero" << endl;
-		cout << "3. Crear reserva" << endl;
-		cout << "4. Listar vuelos" << endl;
-		cout << "5. Listar pasajeros" << endl;
-		cout << "6. Buscar vuelo" << endl;
-		cout << "7. Buscar pasajero" << endl;
-		cout << "8. Salir" << endl;
-		cout << "Opcion: ";
-		cin >> opcion;
-		
-		switch (opcion) {
-		case 1:
-			registrarVuelo();
-			break;
-		case 2:
-			registrarPasajero();
-			break;
-		case 3:
-			crearReserva();
-			break;
-		case 4:
-			listarVuelos();
-			break;
-		case 5:
-			listarPasajeros();
-			break;
-		case 6:
-			buscarVuelo();
-			break;
-		case 7:
-			buscarPasajero();
-			break;
-		case 8:
-			system("cls");
-			cout << "Saliendo del sistema..." << endl;
-			break;
-		default:
-			cout << "Opcion invalida. Intente nuevamente." << endl;
-			break;
-		}
-	} while (opcion != 8);
-}
-
-int main() {
-	Menu s1;
-	s1.menuPrincipal();
-	return 0;
+//-----------------------------------------
+int main()
+{
+    Menu s1;
+    s1.menuPrincipal();
+    return 0;
 }
