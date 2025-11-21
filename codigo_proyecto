@@ -554,7 +554,7 @@ void Menu::menuPrincipal()
         cout << "4. SALIR" << endl;
         cout << endl;
         cout << "Opcion: ";
-        cin >> opcion;
+        cin >> opcion;hyrjyfhfhfbnh
 
         switch(opcion) {
         case 1:
