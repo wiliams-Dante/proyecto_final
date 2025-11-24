@@ -1,142 +1,26 @@
 #include <iostream>
+#include <string>
 using namespace std;
-
-// =============================
-// Funciones de cadenas hechas por ti
-// =============================
-int mi_strlen(const char* s) {
-    int n = 0;
-    while (s[n] != '\0') n++;
-    return n;
-}
-
-void mi_strcpy(char* dest, const char* src) {
-    int i = 0;
-    while (true) {
-        dest[i] = src[i];
-        if (src[i] == '\0') break;
-        i++;
-    }
-}
-
-int mi_strcmp(const char* a, const char* b) {
-    int i = 0;
-    while (a[i] != '\0' && b[i] != '\0') {
-        if (a[i] != b[i]) {
-            return (unsigned char)a[i] - (unsigned char)b[i];
-        }
-        i++;
-    }
-    return (unsigned char)a[i] - (unsigned char)b[i];
-}
-
-// =============================
-// Clase String propia (sin <string>)
-// =============================
-class String {
-private:
-    char* data;
-    int len;
-
-public:
-    String() {
-        len = 0;
-        data = new char[1];
-        data[0] = '\0';
-    }
-
-    String(const char* s) {
-        if (s) {
-            len = mi_strlen(s);
-            data = new char[len + 1];
-            mi_strcpy(data, s);
-        } else {
-            len = 0;
-            data = new char[1];
-            data[0] = '\0';
-        }
-    }
-
-    String(const String& other) {
-        len = other.len;
-        data = new char[len + 1];
-        mi_strcpy(data, other.data);
-    }
-
-    ~String() {
-        delete[] data;
-    }
-
-    String& operator=(const String& other) {
-        if (this != &other) {
-            delete[] data;
-            len = other.len;
-            data = new char[len + 1];
-            mi_strcpy(data, other.data);
-        }
-        return *this;
-    }
-
-    String& operator=(const char* s) {
-        delete[] data;
-        if (s) {
-            len = mi_strlen(s);
-            data = new char[len + 1];
-            mi_strcpy(data, s);
-        } else {
-            len = 0;
-            data = new char[1];
-            data[0] = '\0';
-        }
-        return *this;
-    }
-
-    bool operator==(const String& other) const {
-        return mi_strcmp(data, other.data) == 0;
-    }
-
-    const char* c_str() const {
-        return data;
-    }
-
-    void leerLinea() {
-        char buffer[200];
-        cin.getline(buffer, 200);
-        *this = buffer;
-    }
-
-    friend ostream& operator<<(ostream& os, const String& s) {
-        os << s.data;
-        return os;
-    }
-
-    friend istream& operator>>(istream& is, String& s) {
-        char buffer[200];
-        is >> buffer;
-        s = buffer;
-        return is;
-    }
-};
 
 // =============================
 // Clase base Documentos
 // =============================
 class Documentos {
 protected:
-    String numero;  // numero de documento
+    string numero;  // numero de documento
 
 public:
     Documentos() {}
 
-    Documentos(const String& num) {
+    Documentos(const string& num) {
         numero = num;
     }
 
-    void setNumero(const String& num) {
+    void setNumero(const string& num) {
         numero = num;
     }
 
-    String getNumero() const {
+    string getNumero() const {
         return numero;
     }
 };
@@ -146,17 +30,17 @@ public:
 // =============================
 class DNI : public Documentos {
 private:
-    String nombres;
-    String apellidos;
-    String nacionalidad;
-    String sexo;
+    string nombres;
+    string apellidos;
+    string nacionalidad;
+    string sexo;
 
 public:
     DNI() : Documentos() {}
 
-    DNI(const String& nom, const String& ape,
-        const String& nac, const String& sx,
-        const String& num)
+    DNI(const string& nom, const string& ape,
+        const string& nac, const string& sx,
+        const string& num)
         : Documentos(num)
     {
         nombres = nom;
@@ -165,10 +49,10 @@ public:
         sexo = sx;
     }
 
-    String getNombres() const { return nombres; }
-    String getApellidos() const { return apellidos; }
-    String getNacionalidad() const { return nacionalidad; }
-    String getSexo() const { return sexo; }
+    string getNombres() const { return nombres; }
+    string getApellidos() const { return apellidos; }
+    string getNacionalidad() const { return nacionalidad; }
+    string getSexo() const { return sexo; }
 };
 
 // =============================
@@ -176,16 +60,16 @@ public:
 // =============================
 class VISA : public Documentos {
 private:
-    String tipo;
-    String paisDestino;
-    String fechaEmision;
-    String fechaVencimiento;
+    string tipo;
+    string paisDestino;
+    string fechaEmision;
+    string fechaVencimiento;
 
 public:
     VISA() : Documentos() {}
 
-    VISA(String num, String tipoVisa, String paisDest,
-         String fEmi, String fVen)
+    VISA(const string& num, const string& tipoVisa, const string& paisDest,
+         const string& fEmi, const string& fVen)
         : Documentos(num)
     {
         tipo = tipoVisa;
@@ -194,8 +78,8 @@ public:
         fechaVencimiento = fVen;
     }
 
-    String getPaisDestino() const { return paisDestino; }
-    String getTipo() const { return tipo; }
+    string getPaisDestino() const { return paisDestino; }
+    string getTipo() const { return tipo; }
 };
 
 // =============================
@@ -204,11 +88,11 @@ public:
 class Vuelo
 {
 private:
-    String paisDestino;
-    String aerolinea;
-    String horaSalida;
-    String horaLlegada;
-    String fecha;
+    string paisDestino;
+    string aerolinea;
+    string horaSalida;
+    string horaLlegada;
+    string fecha;
     int    cantidadAsientos;
 
     static const int MAX_ASIENTOS = 10;
@@ -219,9 +103,9 @@ private:
     int indexHorario;
 
 public:
-    Vuelo(String p = "", String a = "",
-          String hs = "", String hl = "",
-          String f = "", int cant = 0,
+    Vuelo(string p = "", string a = "",
+          string hs = "", string hl = "",
+          string f = "", int cant = 0,
           int idxPais = -1, int idxHor = -1)
     {
         paisDestino = p;
@@ -260,19 +144,19 @@ public:
     }
 
     // Getters
-    String getPaisDestino()   const { return paisDestino; }
-    String getHoraSalida()    const { return horaSalida; }
-    String getHoraLlegada()   const { return horaLlegada; }
-    String getFecha()         const { return fecha; }
+    string getPaisDestino()   const { return paisDestino; }
+    string getHoraSalida()    const { return horaSalida; }
+    string getHoraLlegada()   const { return horaLlegada; }
+    string getFecha()         const { return fecha; }
     int    getCantidad()      const { return cantidadAsientos; }
 
     int getIndexPais() const      { return indexPais; }
     int getIndexHorario() const   { return indexHorario; }
 
     // Setters
-    void setFecha(const String& f)          { fecha = f; }
-    void setHoraSalida(const String& hs)    { horaSalida = hs; }
-    void setHoraLlegada(const String& hl)   { horaLlegada = hl; }
+    void setFecha(const string& f)          { fecha = f; }
+    void setHoraSalida(const string& hs)    { horaSalida = hs; }
+    void setHoraLlegada(const string& hl)   { horaLlegada = hl; }
     void setCantidadAsientos(int c)         { cantidadAsientos = c; }
     void setIndexPais(int ip)              { indexPais = ip; }
     void setIndexHorario(int ih)           { indexHorario = ih; }
@@ -305,18 +189,18 @@ public:
 // =============================
 class Persona {
 protected:
-    String nombres;
-    String apellidos;
+    string nombres;
+    string apellidos;
     DNI dni;
 
 public:
     Persona() {}
 
-    Persona(const String& nom, const String& ape, const DNI& d)
+    Persona(const string& nom, const string& ape, const DNI& d)
         : nombres(nom), apellidos(ape), dni(d) {}
 
-    String getNombres() const { return nombres; }
-    String getApellidos() const { return apellidos; }
+    string getNombres() const { return nombres; }
+    string getApellidos() const { return apellidos; }
     DNI getDNI() const { return dni; }
 };
 
@@ -325,8 +209,8 @@ public:
 // =============================
 class Cliente : public Persona {
 private:
-    String usuario;
-    String password;
+    string usuario;
+    string password;
 
     bool tieneVisa;
     VISA visa;
@@ -345,10 +229,10 @@ public:
         boletos = new Vuelo[capacidadBoletos];
     }
 
-    Cliente(const String& nom, const String& ape,
+    Cliente(const string& nom, const string& ape,
             const DNI& d,
-            const String& user,
-            const String& pass)
+            const string& user,
+            const string& pass)
         : Persona(nom, ape, d)
     {
         usuario = user;
@@ -363,7 +247,7 @@ public:
         delete[] boletos;
     }
 
-    bool verificarLogin(const String& user, const String& pass) const {
+    bool verificarLogin(const string& user, const string& pass) const {
         return (usuario == user && password == pass);
     }
 
@@ -372,7 +256,7 @@ public:
         tieneVisa = true;
     }
 
-    bool tieneVisaPara(const String& pais) const {
+    bool tieneVisaPara(const string& pais) const {
         return (tieneVisa && (visa.getPaisDestino() == pais));
     }
 
@@ -418,8 +302,8 @@ private:
     static const int COLUMNAS = 6;
     char asientos[FILAS][COLUMNAS];  // 'O' libre, 'X' ocupado
 
-    String horaSalida;
-    String horaLlegada;
+    string horaSalida;
+    string horaLlegada;
     int asientosTotales;
     int asientosDisponibles;
 
@@ -440,7 +324,7 @@ private:
 
 public:
 
-    Horario(String salida = "", String llegada = "", int totalIgnorado = 0)
+    Horario(string salida = "", string llegada = "", int totalIgnorado = 0)
     {
         horaSalida = salida;
         horaLlegada = llegada;
@@ -518,8 +402,8 @@ public:
         return false;
     }
 
-    String getHoraSalida()  const { return horaSalida; }
-    String getHoraLlegada() const { return horaLlegada; }
+    string getHoraSalida()  const { return horaSalida; }
+    string getHoraLlegada() const { return horaLlegada; }
     int getAsientosDisponibles() const { return asientosDisponibles; }
 };
 
@@ -529,12 +413,12 @@ public:
 class Dia
 {
 private:
-    String fecha;
+    string fecha;
     Horario horarios[3];
     int numHorarios;
 
 public:
-    Dia(String f = "",
+    Dia(string f = "",
         Horario h1 = Horario(),
         Horario h2 = Horario(),
         Horario h3 = Horario())
@@ -558,7 +442,7 @@ public:
         return false;
     }
 
-    String getFecha() {
+    string getFecha() {
         return fecha;
     }
 };
@@ -569,15 +453,15 @@ public:
 class Pais
 {
 private:
-    String nombre;
-    String aerolinea1;
-    String aerolinea2;
-    String aerolinea3;
+    string nombre;
+    string aerolinea1;
+    string aerolinea2;
+    string aerolinea3;
     Horario horarios[3];
 
 public:
 
-    Pais(String n = "", String a1 = "", String a2 = "", String a3 = "",
+    Pais(string n = "", string a1 = "", string a2 = "", string a3 = "",
          Horario h1 = Horario(), Horario h2 = Horario(), Horario h3 = Horario())
     {
         nombre = n;
@@ -589,10 +473,10 @@ public:
         horarios[2] = h3;
     }
 
-    String getNombre()        { return nombre; }
-    String getAerolinea1()    { return aerolinea1; }
-    String getAerolinea2()    { return aerolinea2; }
-    String getAerolinea3()    { return aerolinea3; }
+    string getNombre()        { return nombre; }
+    string getAerolinea1()    { return aerolinea1; }
+    string getAerolinea2()    { return aerolinea2; }
+    string getAerolinea3()    { return aerolinea3; }
 
     void mostrarAerolineas()
     {
@@ -619,10 +503,10 @@ public:
 // =============================
 // Función auxiliar: paisRequiereVisa
 // =============================
-bool paisRequiereVisa(const String& nombrePais) {
-    if (nombrePais == String("España") ||
-        nombrePais == String("Canada") ||
-        nombrePais == String("Portugal")) {
+bool paisRequiereVisa(const string& nombrePais) {
+    if (nombrePais == "España" ||
+        nombrePais == "Canada" ||
+        nombrePais == "Portugal") {
         return true;
     }
     return false;
@@ -745,20 +629,20 @@ void Menu::registrarCliente()
 
     cin.ignore(); // limpiar salto de linea previo
 
-    String nombres, apellidos, nacionalidad, sexo, numeroDni;
-    String usuario, password;
+    string nombres, apellidos, nacionalidad, sexo, numeroDni;
+    string usuario, password;
 
     cout << "\n--- REGISTRO DE CLIENTE ---" << endl;
     cout << "Ingrese nombres: ";
-    nombres.leerLinea();
+    getline(cin, nombres);
     cout << "Ingrese apellidos: ";
-    apellidos.leerLinea();
+    getline(cin, apellidos);
     cout << "Ingrese nacionalidad: ";
-    nacionalidad.leerLinea();
+    getline(cin, nacionalidad);
     cout << "Ingrese sexo (M/F): ";
-    sexo.leerLinea();
+    getline(cin, sexo);
     cout << "Ingrese numero de DNI: ";
-    numeroDni.leerLinea();
+    getline(cin, numeroDni);
 
     cout << "Cree un nombre de usuario (sin espacios): ";
     cin >> usuario;
@@ -774,7 +658,7 @@ void Menu::registrarCliente()
 
 void Menu::iniciarSesion()
 {
-    String user, pass;
+    string user, pass;
 
     cout << "\n--- INICIAR SESION ---" << endl;
     cout << "Usuario: ";
@@ -803,7 +687,7 @@ void Menu::registrarVisaCliente()
         return;
     }
 
-    String numVisa, tipoVisa, paisDest, fEmi, fVen;
+    string numVisa, tipoVisa, paisDest, fEmi, fVen;
 
     cout << "\n--- REGISTRAR VISA ---" << endl;
     cout << "Numero de VISA: ";
@@ -867,7 +751,7 @@ void Menu::comprar_vuelo()
         return;
     }
 
-    String aerolineaSeleccionada;
+    string aerolineaSeleccionada;
     switch(opcionAerolinea) {
         case 1:
             aerolineaSeleccionada = paisSeleccionado.getAerolinea1();
@@ -897,7 +781,7 @@ void Menu::comprar_vuelo()
     }
 
     // Fecha del vuelo
-    String fechaVuelo;
+    string fechaVuelo;
     cout << "\nIngrese fecha del vuelo (dd/mm/aaaa): ";
     cin >> fechaVuelo;
 
@@ -1037,7 +921,7 @@ void Menu::modificar_voleto()
     cin >> resp;
 
     if (resp == 's' || resp == 'S') {
-        String nuevaFecha;
+        string nuevaFecha;
         cout << "Nueva fecha (dd/mm/aaaa): ";
         cin >> nuevaFecha;
         vb->setFecha(nuevaFecha);
