@@ -1,117 +1,430 @@
 #include <iostream>
-#include <string>
-#include <cstdlib>
-#include <ctime>
 using namespace std;
 
-class DNI
+// =============================
+// Funciones de cadenas hechas por ti
+// =============================
+int mi_strlen(const char* s) {
+    int n = 0;
+    while (s[n] != '\0') n++;
+    return n;
+}
+
+void mi_strcpy(char* dest, const char* src) {
+    int i = 0;
+    while (true) {
+        dest[i] = src[i];
+        if (src[i] == '\0') break;
+        i++;
+    }
+}
+
+int mi_strcmp(const char* a, const char* b) {
+    int i = 0;
+    while (a[i] != '\0' && b[i] != '\0') {
+        if (a[i] != b[i]) {
+            return (unsigned char)a[i] - (unsigned char)b[i];
+        }
+        i++;
+    }
+    return (unsigned char)a[i] - (unsigned char)b[i];
+}
+
+// =============================
+// Clase String propia (sin <string>)
+// =============================
+class String {
+private:
+    char* data;
+    int len;
+
+public:
+    String() {
+        len = 0;
+        data = new char[1];
+        data[0] = '\0';
+    }
+
+    String(const char* s) {
+        if (s) {
+            len = mi_strlen(s);
+            data = new char[len + 1];
+            mi_strcpy(data, s);
+        } else {
+            len = 0;
+            data = new char[1];
+            data[0] = '\0';
+        }
+    }
+
+    String(const String& other) {
+        len = other.len;
+        data = new char[len + 1];
+        mi_strcpy(data, other.data);
+    }
+
+    ~String() {
+        delete[] data;
+    }
+
+    String& operator=(const String& other) {
+        if (this != &other) {
+            delete[] data;
+            len = other.len;
+            data = new char[len + 1];
+            mi_strcpy(data, other.data);
+        }
+        return *this;
+    }
+
+    String& operator=(const char* s) {
+        delete[] data;
+        if (s) {
+            len = mi_strlen(s);
+            data = new char[len + 1];
+            mi_strcpy(data, s);
+        } else {
+            len = 0;
+            data = new char[1];
+            data[0] = '\0';
+        }
+        return *this;
+    }
+
+    bool operator==(const String& other) const {
+        return mi_strcmp(data, other.data) == 0;
+    }
+
+    const char* c_str() const {
+        return data;
+    }
+
+    void leerLinea() {
+        char buffer[200];
+        cin.getline(buffer, 200);
+        *this = buffer;
+    }
+
+    friend ostream& operator<<(ostream& os, const String& s) {
+        os << s.data;
+        return os;
+    }
+
+    friend istream& operator>>(istream& is, String& s) {
+        char buffer[200];
+        is >> buffer;
+        s = buffer;
+        return is;
+    }
+};
+
+// =============================
+// Clase base Documentos
+// =============================
+class Documentos {
+protected:
+    String numero;  // numero de documento
+
+public:
+    Documentos() {}
+
+    Documentos(const String& num) {
+        numero = num;
+    }
+
+    void setNumero(const String& num) {
+        numero = num;
+    }
+
+    String getNumero() const {
+        return numero;
+    }
+};
+
+// =============================
+// DNI hereda de Documentos
+// =============================
+class DNI : public Documentos {
+private:
+    String nombres;
+    String apellidos;
+    String nacionalidad;
+    String sexo;
+
+public:
+    DNI() : Documentos() {}
+
+    DNI(const String& nom, const String& ape,
+        const String& nac, const String& sx,
+        const String& num)
+        : Documentos(num)
+    {
+        nombres = nom;
+        apellidos = ape;
+        nacionalidad = nac;
+        sexo = sx;
+    }
+
+    String getNombres() const { return nombres; }
+    String getApellidos() const { return apellidos; }
+    String getNacionalidad() const { return nacionalidad; }
+    String getSexo() const { return sexo; }
+};
+
+// =============================
+// VISA hereda de Documentos
+// =============================
+class VISA : public Documentos {
+private:
+    String tipo;
+    String paisDestino;
+    String fechaEmision;
+    String fechaVencimiento;
+
+public:
+    VISA() : Documentos() {}
+
+    VISA(String num, String tipoVisa, String paisDest,
+         String fEmi, String fVen)
+        : Documentos(num)
+    {
+        tipo = tipoVisa;
+        paisDestino = paisDest;
+        fechaEmision = fEmi;
+        fechaVencimiento = fVen;
+    }
+
+    String getPaisDestino() const { return paisDestino; }
+    String getTipo() const { return tipo; }
+};
+
+// =============================
+// Clase Vuelo (boleto)
+// =============================
+class Vuelo
 {
 private:
-    string nombres[5];
-    string apellidos[5];
-    string nacionalidades[5];
-    string sexos[5];
-    string codigos[5];
+    String paisDestino;
+    String aerolinea;
+    String horaSalida;
+    String horaLlegada;
+    String fecha;
+    int    cantidadAsientos;
+
+    static const int MAX_ASIENTOS = 10;
+    int filas[MAX_ASIENTOS];
+    int columnas[MAX_ASIENTOS];
+
+    int indexPais;
+    int indexHorario;
 
 public:
-    DNI()
+    Vuelo(String p = "", String a = "",
+          String hs = "", String hl = "",
+          String f = "", int cant = 0,
+          int idxPais = -1, int idxHor = -1)
     {
-        nombres[0] = "Gustavo Alonso";
-        apellidos[0] = "Moreno Ojeda";
-        nacionalidades[0] = "peruana";
-        sexos[0] = "M";
-        codigos[0] = "72385379";
-
-        nombres[1] = "Manuel Eduardo";
-        apellidos[1] = "Loaiza Fernadez";
-        nacionalidades[1] = "peruana";
-        sexos[1] = "M";
-        codigos[1] = "123";
-
-        nombres[2] = "Alvaro Henry";
-        apellidos[2] = "Mamani Aliaga";
-        nacionalidades[2] = "peruana";
-        sexos[2] = "M";
-        codigos[2] = "321";
-
-        nombres[3] = "Wiliams Yeferson";
-        apellidos[3] = "Taipe Huanca";
-        nacionalidades[3] = "peruana";
-        sexos[3] = "M";
-        codigos[3] = "456";
-
-        nombres[4] = "Luis Carlos";
-        apellidos[4] = "Unancha Chavez";
-        nacionalidades[4] = "peruana";
-        sexos[4] = "M";
-        codigos[4] = "4321";
+        paisDestino = p;
+        aerolinea = a;
+        horaSalida = hs;
+        horaLlegada = hl;
+        fecha = f;
+        cantidadAsientos = 0; // se llenará con agregarAsiento
+        indexPais = idxPais;
+        indexHorario = idxHor;
     }
 
-    bool verificarDatos(string nombre, string apellido, string dni_codigo)
+    void agregarAsiento(int fila, int columna) {
+        if (cantidadAsientos < MAX_ASIENTOS) {
+            filas[cantidadAsientos] = fila;
+            columnas[cantidadAsientos] = columna;
+            cantidadAsientos++;
+        }
+    }
+
+    void setAsiento(int indice, int fila, int columna) {
+        if (indice >= 0 && indice < MAX_ASIENTOS) {
+            filas[indice] = fila;
+            columnas[indice] = columna;
+        }
+    }
+
+    int getFilaAsiento(int indice) const {
+        if (indice >= 0 && indice < cantidadAsientos) return filas[indice];
+        return -1;
+    }
+
+    int getColumnaAsiento(int indice) const {
+        if (indice >= 0 && indice < cantidadAsientos) return columnas[indice];
+        return -1;
+    }
+
+    // Getters
+    String getPaisDestino()   const { return paisDestino; }
+    String getHoraSalida()    const { return horaSalida; }
+    String getHoraLlegada()   const { return horaLlegada; }
+    String getFecha()         const { return fecha; }
+    int    getCantidad()      const { return cantidadAsientos; }
+
+    int getIndexPais() const      { return indexPais; }
+    int getIndexHorario() const   { return indexHorario; }
+
+    // Setters
+    void setFecha(const String& f)          { fecha = f; }
+    void setHoraSalida(const String& hs)    { horaSalida = hs; }
+    void setHoraLlegada(const String& hl)   { horaLlegada = hl; }
+    void setCantidadAsientos(int c)         { cantidadAsientos = c; }
+    void setIndexPais(int ip)              { indexPais = ip; }
+    void setIndexHorario(int ih)           { indexHorario = ih; }
+
+    void mostrarBoleto() const
     {
-        for(int i = 0; i < 5; i++)
-        {
-            if(nombres[i] == nombre && apellidos[i] == apellido && codigos[i] == dni_codigo)
-            {
-                return true;
+        cout << "\n=========== BOLETO DE VUELO ===========" << endl;
+        cout << "Destino:       " << paisDestino << endl;
+        cout << "Fecha:         " << fecha << endl;
+        cout << "Aerolinea:     " << aerolinea << endl;
+        cout << "Hora salida:   " << horaSalida << endl;
+        cout << "Hora llegada:  " << horaLlegada << endl;
+        cout << "Asientos:      " << cantidadAsientos << endl;
+        if (cantidadAsientos > 0) {
+            cout << "Posiciones de asientos:" << endl;
+            for (int i = 0; i < cantidadAsientos; i++) {
+                cout << "   - Asiento " << (i+1)
+                     << ": fila " << filas[i]
+                     << ", columna " << columnas[i] << endl;
             }
         }
-        return false;
+        cout << "---------------------------------------" << endl;
+        cout << "  ¡Gracias por su compra, buen viaje!  " << endl;
+        cout << "=======================================\n" << endl;
     }
 };
 
-class Pasaporte: public DNI
-{
+// =============================
+// Clase base Persona
+// =============================
+class Persona {
+protected:
+    String nombres;
+    String apellidos;
+    DNI dni;
+
 public:
+    Persona() {}
 
-    bool solicitarPasaporte()
+    Persona(const String& nom, const String& ape, const DNI& d)
+        : nombres(nom), apellidos(ape), dni(d) {}
+
+    String getNombres() const { return nombres; }
+    String getApellidos() const { return apellidos; }
+    DNI getDNI() const { return dni; }
+};
+
+// =============================
+// Clase Cliente hereda de Persona
+// =============================
+class Cliente : public Persona {
+private:
+    String usuario;
+    String password;
+
+    bool tieneVisa;
+    VISA visa;
+
+    Vuelo* boletos;      // memoria dinámica
+    int numBoletos;
+    int capacidadBoletos;
+
+public:
+    Cliente() : Persona() {
+        usuario = "";
+        password = "";
+        tieneVisa = false;
+        numBoletos = 0;
+        capacidadBoletos = 10;
+        boletos = new Vuelo[capacidadBoletos];
+    }
+
+    Cliente(const String& nom, const String& ape,
+            const DNI& d,
+            const String& user,
+            const String& pass)
+        : Persona(nom, ape, d)
     {
-        string nombre, apellido, dni_codigo;
+        usuario = user;
+        password = pass;
+        tieneVisa = false;
+        numBoletos = 0;
+        capacidadBoletos = 10;
+        boletos = new Vuelo[capacidadBoletos];
+    }
 
-        cout << "\n=== VERIFICACION DE PASAPORTE ===" << endl;
-        cout << "Ingrese nombre: ";
-        cin.ignore();
-        getline(cin, nombre);
-        cout << "Ingrese apellido: ";
-        getline(cin, apellido);
-        cout << "Ingrese numero de DNI: ";
-        cin >> dni_codigo;
+    ~Cliente() {
+        delete[] boletos;
+    }
 
-        if(verificarDatos(nombre, apellido, dni_codigo))
-        {
-            cout << "Datos verificados correctamente..." << endl;
-            return true;
+    bool verificarLogin(const String& user, const String& pass) const {
+        return (usuario == user && password == pass);
+    }
 
-        } else{
-            cout << "ERROR: Los datos ingresados no coinciden con los registros" << endl;
-            return false;
+    void registrarVisa(const VISA& v) {
+        visa = v;
+        tieneVisa = true;
+    }
+
+    bool tieneVisaPara(const String& pais) const {
+        return (tieneVisa && (visa.getPaisDestino() == pais));
+    }
+
+    void agregarBoleto(const Vuelo& v) {
+        if (numBoletos < capacidadBoletos) {
+            boletos[numBoletos] = v;
+            numBoletos++;
+        } else {
+            cout << "No se pueden agregar mas boletos a este cliente." << endl;
         }
     }
+
+    void mostrarBoletos() const {
+        if (numBoletos == 0) {
+            cout << "\nNo tiene boletos comprados aún.\n";
+            return;
+        }
+
+        cout << "\n--- BOLETOS COMPRADOS ---\n";
+        for (int i = 0; i < numBoletos; i++) {
+            cout << "\nBoleto #" << (i+1) << endl;
+            boletos[i].mostrarBoleto();
+        }
+    }
+
+    int getNumBoletos() const {
+        return numBoletos;
+    }
+
+    Vuelo* obtenerBoleto(int indice) {
+        if (indice < 0 || indice >= numBoletos) return 0;
+        return &boletos[indice];
+    }
 };
 
-class VISA: public DNI
-{
-    // pendiente de implementar
-};
-
-// -------------------------
-// Clase Horario con matriz de asientos
-// -------------------------
+// =============================
+// Clase Horario
+// =============================
 class Horario
 {
 private:
-    static const int FILAS = 10;     // puedes cambiar el tamaño
-    static const int COLUMNAS = 6;   // columnas tipo A-F, pero usaremos 1-6
+    static const int FILAS = 10;
+    static const int COLUMNAS = 6;
     char asientos[FILAS][COLUMNAS];  // 'O' libre, 'X' ocupado
 
-    string horaSalida;
-    string horaLlegada;
+    String horaSalida;
+    String horaLlegada;
     int asientosTotales;
     int asientosDisponibles;
 
-    void inicializarAsientosAleatorios()
+    void inicializarAsientos()
     {
-        // Inicialmente todos libres
         for(int i = 0; i < FILAS; i++)
         {
             for(int j = 0; j < COLUMNAS; j++)
@@ -120,34 +433,18 @@ private:
             }
         }
 
-        // Ocupamos al azar parte de los asientos (por ejemplo, 20% del total)
         int total = FILAS * COLUMNAS;
-        int ocupar = total / 5; // 20%
-
-        int ocupados = 0;
-        while(ocupados < ocupar)
-        {
-            int f = rand() % FILAS;
-            int c = rand() % COLUMNAS;
-
-            if(asientos[f][c] == 'O')
-            {
-                asientos[f][c] = 'X';
-                ocupados++;
-            }
-        }
-
         asientosTotales = total;
-        asientosDisponibles = total - ocupados;
+        asientosDisponibles = total;
     }
 
 public:
 
-    Horario(string salida = "", string llegada = "", int totalIgnorado = 0)
+    Horario(String salida = "", String llegada = "", int totalIgnorado = 0)
     {
         horaSalida = salida;
         horaLlegada = llegada;
-        inicializarAsientosAleatorios();
+        inicializarAsientos();
     }
 
     void mostrarHorario(int num) {
@@ -157,7 +454,6 @@ public:
              << endl;
     }
 
-    // Mostrar mapa de asientos tipo cine
     void mostrarMapaAsientos()
     {
         cout << "\nMapa de asientos (O = libre, X = ocupado)" << endl;
@@ -182,7 +478,6 @@ public:
 
     bool reservarAsientoPosicion(int fila, int columna)
     {
-        // fila y columna vienen 1-based del usuario
         int f = fila - 1;
         int c = columna - 1;
 
@@ -204,24 +499,42 @@ public:
         return true;
     }
 
-    // por si necesitas estos getters
-    string getHoraSalida()  const { return horaSalida; }
-    string getHoraLlegada() const { return horaLlegada; }
+    bool liberarAsientoPosicion(int fila, int columna)
+    {
+        int f = fila - 1;
+        int c = columna - 1;
+
+        if(f < 0 || f >= FILAS || c < 0 || c >= COLUMNAS)
+        {
+            return false;
+        }
+
+        if(asientos[f][c] == 'X')
+        {
+            asientos[f][c] = 'O';
+            asientosDisponibles++;
+            return true;
+        }
+        return false;
+    }
+
+    String getHoraSalida()  const { return horaSalida; }
+    String getHoraLlegada() const { return horaLlegada; }
     int getAsientosDisponibles() const { return asientosDisponibles; }
 };
 
-// -------------------------
-// Clase Dia (no usada en el flujo actual, pero lista)
-// -------------------------
+// =============================
+// Clase Dia (no usada en flujo actual)
+// =============================
 class Dia
 {
 private:
-    string fecha;
+    String fecha;
     Horario horarios[3];
     int numHorarios;
 
 public:
-    Dia(string f = "",
+    Dia(String f = "",
         Horario h1 = Horario(),
         Horario h2 = Horario(),
         Horario h3 = Horario())
@@ -242,128 +555,133 @@ public:
 
     bool reservar(int indice, int cant)
     {
-        // pendiente adaptar si quieres manejar por día
         return false;
     }
 
-    string getFecha() {
+    String getFecha() {
         return fecha;
     }
 };
 
-
-// -------------------------
+// =============================
 // Clase Pais
-// -------------------------
+// =============================
 class Pais
 {
-    private:
-        string nombre;
-        string aerolinea1;
-        string aerolinea2;
-        string aerolinea3;
-        Horario horarios[3];
-
-    public:
-
-        Pais(string n = "", string a1 = "", string a2 = "", string a3 = "",
-             Horario h1 = Horario(), Horario h2 = Horario(), Horario h3 = Horario())
-        {
-            nombre = n;
-            aerolinea1 = a1;
-            aerolinea2 = a2;
-            aerolinea3 = a3;
-            horarios[0] = h1;
-            horarios[1] = h2;
-            horarios[2] = h3;
-        }
-
-        string getNombre()        { return nombre; }
-        string getAerolinea1()    { return aerolinea1; }
-        string getAerolinea2()    { return aerolinea2; }
-        string getAerolinea3()    { return aerolinea3; }
-
-        void mostrarAerolineas()
-        {
-            cout << "\nAerolineas disponibles para " << nombre << ":" << endl;
-            cout << "1. " << aerolinea1 << endl;
-            cout << "2. " << aerolinea2 << endl;
-            cout << "3. " << aerolinea3 << endl;
-        }
-
-        void mostrarHorarios()
-        {
-            cout << "\nHorarios disponibles para " << nombre << ":" << endl;
-            for(int i = 0; i < 3; i++)
-            {
-                horarios[i].mostrarHorario(i+1);
-            }
-        }
-
-        Horario& getHorario(int indice) {
-            return horarios[indice];
-        }
-};
-
-// -------------------------
-// Clase Vuelo (boleto / reserva)
-// -------------------------
-class Vuelo
-{
 private:
-    string paisDestino;
-    string aerolinea;
-    string horaSalida;
-    string horaLlegada;
-    int cantidadAsientos;
+    String nombre;
+    String aerolinea1;
+    String aerolinea2;
+    String aerolinea3;
+    Horario horarios[3];
 
 public:
-    Vuelo(string p = "", string a = "",
-          string hs = "", string hl = "",
-          int cant = 0)
+
+    Pais(String n = "", String a1 = "", String a2 = "", String a3 = "",
+         Horario h1 = Horario(), Horario h2 = Horario(), Horario h3 = Horario())
     {
-        paisDestino = p;
-        aerolinea = a;
-        horaSalida = hs;
-        horaLlegada = hl;
-        cantidadAsientos = cant;
+        nombre = n;
+        aerolinea1 = a1;
+        aerolinea2 = a2;
+        aerolinea3 = a3;
+        horarios[0] = h1;
+        horarios[1] = h2;
+        horarios[2] = h3;
     }
 
-    void mostrarBoleto()
+    String getNombre()        { return nombre; }
+    String getAerolinea1()    { return aerolinea1; }
+    String getAerolinea2()    { return aerolinea2; }
+    String getAerolinea3()    { return aerolinea3; }
+
+    void mostrarAerolineas()
     {
-        cout << "\n=========== BOLETO DE VUELO ===========" << endl;
-        cout << "Destino:       " << paisDestino << endl;
-        cout << "Aerolinea:     " << aerolinea << endl;
-        cout << "Hora salida:   " << horaSalida << endl;
-        cout << "Hora llegada:  " << horaLlegada << endl;
-        cout << "Asientos:      " << cantidadAsientos << endl;
-        cout << "---------------------------------------" << endl;
-        cout << "  ¡Gracias por su compra, buen viaje!  " << endl;
-        cout << "=======================================\n" << endl;
+        cout << "\nAerolineas disponibles para " << nombre << ":" << endl;
+        cout << "1. " << aerolinea1 << endl;
+        cout << "2. " << aerolinea2 << endl;
+        cout << "3. " << aerolinea3 << endl;
+    }
+
+    void mostrarHorarios()
+    {
+        cout << "\nHorarios disponibles para " << nombre << ":" << endl;
+        for(int i = 0; i < 3; i++)
+        {
+            horarios[i].mostrarHorario(i+1);
+        }
+    }
+
+    Horario& getHorario(int indice) {
+        return horarios[indice];
     }
 };
 
-// -------------------------
+// =============================
+// Función auxiliar: paisRequiereVisa
+// =============================
+bool paisRequiereVisa(const String& nombrePais) {
+    if (nombrePais == String("España") ||
+        nombrePais == String("Canada") ||
+        nombrePais == String("Portugal")) {
+        return true;
+    }
+    return false;
+}
+
+// =============================
 // Clase Menu
-// -------------------------
+// =============================
 class Menu
 {
-    private:
-        Pais paises[7];
-        Pasaporte pasaporte;
+private:
+    Pais paises[7];
 
-    public:
-        Menu();
+    Cliente** clientes;   // arreglo dinámico de punteros a Cliente
+    int numClientes;
+    int capacidadClientes;
 
-        void buscar_vuelo();
-        void comprar_vuelo();
-        void modificar_voleto();
-        void menuPrincipal();
+    Cliente* clienteActual; // puntero al cliente logueado
+
+public:
+    Menu();
+    ~Menu();
+
+    void mostrar_boletos();
+    void comprar_vuelo();
+    void modificar_voleto();
+    void registrarCliente();
+    void iniciarSesion();
+    void registrarVisaCliente();
+    void menuPrincipal();
 };
 
-
+// =============================
+// Implementacion de Menu
+// =============================
 Menu::Menu()
 {
+    capacidadClientes = 10;
+    numClientes = 0;
+    clientes = new Cliente*[capacidadClientes];
+    clienteActual = 0;
+
+    // Clientes precargados (dinámicos)
+    DNI d0("Gustavo Alonso", "Moreno Ojeda", "peruana", "M", "72385379");
+    clientes[numClientes++] = new Cliente("Gustavo Alonso", "Moreno Ojeda", d0, "gustavo", "1234");
+
+    DNI d1("Manuel Eduardo", "Loaiza Fernadez", "peruana", "M", "123");
+    clientes[numClientes++] = new Cliente("Manuel Eduardo", "Loaiza Fernadez", d1, "manuel", "1234");
+
+    DNI d2("Alvaro Henry", "Mamani Aliaga", "peruana", "M", "321");
+    clientes[numClientes++] = new Cliente("Alvaro Henry", "Mamani Aliaga", d2, "alvaro", "1234");
+
+    DNI d3("Wiliams Yeferson", "Taipe Huanca", "peruana", "M", "456");
+    clientes[numClientes++] = new Cliente("Wiliams Yeferson", "Taipe Huanca", d3, "wiliams", "1234");
+
+    DNI d4("Luis Carlos", "Unancha Chavez", "peruana", "M", "4321");
+    clientes[numClientes++] = new Cliente("Luis Carlos", "Unancha Chavez", d4, "luis", "1234");
+
+    // Inicializar paises y horarios
     paises[0] = Pais("Mexico", "Aeromexico", "Volaris", "Interjet",
                      Horario("06:00", "10:00"),
                      Horario("13:30", "17:30"),
@@ -400,13 +718,118 @@ Menu::Menu()
                      Horario("20:00", "00:00"));
 }
 
-void Menu::buscar_vuelo()
+Menu::~Menu()
 {
-    cout << "Funcion buscar_vuelo() (pendiente de implementar)" << endl;
+    for (int i = 0; i < numClientes; i++) {
+        delete clientes[i];
+    }
+    delete[] clientes;
+}
+
+void Menu::mostrar_boletos()
+{
+    if (clienteActual == 0) {
+        cout << "Debe iniciar sesion para ver sus boletos." << endl;
+        return;
+    }
+
+    clienteActual->mostrarBoletos();
+}
+
+void Menu::registrarCliente()
+{
+    if (numClientes >= capacidadClientes) {
+        cout << "No hay mas espacio para registrar clientes." << endl;
+        return;
+    }
+
+    cin.ignore(); // limpiar salto de linea previo
+
+    String nombres, apellidos, nacionalidad, sexo, numeroDni;
+    String usuario, password;
+
+    cout << "\n--- REGISTRO DE CLIENTE ---" << endl;
+    cout << "Ingrese nombres: ";
+    nombres.leerLinea();
+    cout << "Ingrese apellidos: ";
+    apellidos.leerLinea();
+    cout << "Ingrese nacionalidad: ";
+    nacionalidad.leerLinea();
+    cout << "Ingrese sexo (M/F): ";
+    sexo.leerLinea();
+    cout << "Ingrese numero de DNI: ";
+    numeroDni.leerLinea();
+
+    cout << "Cree un nombre de usuario (sin espacios): ";
+    cin >> usuario;
+    cout << "Cree una contraseña (sin espacios): ";
+    cin >> password;
+
+    DNI d(nombres, apellidos, nacionalidad, sexo, numeroDni);
+    clientes[numClientes] = new Cliente(nombres, apellidos, d, usuario, password);
+    numClientes++;
+
+    cout << "Registro completado correctamente." << endl;
+}
+
+void Menu::iniciarSesion()
+{
+    String user, pass;
+
+    cout << "\n--- INICIAR SESION ---" << endl;
+    cout << "Usuario: ";
+    cin >> user;
+    cout << "Contraseña: ";
+    cin >> pass;
+
+    for (int i = 0; i < numClientes; i++) {
+        if (clientes[i]->verificarLogin(user, pass)) {
+            clienteActual = clientes[i];
+            cout << "Inicio de sesion exitoso. Bienvenido, "
+                 << clienteActual->getNombres() << " "
+                 << clienteActual->getApellidos() << endl;
+            return;
+        }
+    }
+
+    cout << "Credenciales incorrectas. No se pudo iniciar sesion." << endl;
+    clienteActual = 0;
+}
+
+void Menu::registrarVisaCliente()
+{
+    if (clienteActual == 0) {
+        cout << "Debe iniciar sesion para registrar una VISA." << endl;
+        return;
+    }
+
+    String numVisa, tipoVisa, paisDest, fEmi, fVen;
+
+    cout << "\n--- REGISTRAR VISA ---" << endl;
+    cout << "Numero de VISA: ";
+    cin >> numVisa;
+    cout << "Pais destino de la VISA: ";
+    cin >> paisDest;
+    cout << "Tipo de VISA (turista, estudio, trabajo, etc.): ";
+    cin >> tipoVisa;
+    cout << "Fecha de emision (dd/mm/aaaa): ";
+    cin >> fEmi;
+    cout << "Fecha de vencimiento (dd/mm/aaaa): ";
+    cin >> fVen;
+
+    VISA v(numVisa, tipoVisa, paisDest, fEmi, fVen);
+    clienteActual->registrarVisa(v);
+
+    cout << "VISA registrada y asociada a su cuenta correctamente." << endl;
 }
 
 void Menu::comprar_vuelo()
 {
+    if (clienteActual == 0) {
+        cout << "Debe iniciar sesion antes de comprar un vuelo." << endl;
+        return;
+    }
+
     int opcionPais, opcionAerolinea;
 
     cout << "\n--- COMPRAR VUELO ---" << endl;
@@ -430,7 +853,8 @@ void Menu::comprar_vuelo()
         return;
     }
 
-    Pais &paisSeleccionado = paises[opcionPais - 1];
+    int indexPais = opcionPais - 1;
+    Pais &paisSeleccionado = paises[indexPais];
 
     paisSeleccionado.mostrarAerolineas();
 
@@ -443,7 +867,7 @@ void Menu::comprar_vuelo()
         return;
     }
 
-    string aerolineaSeleccionada;
+    String aerolineaSeleccionada;
     switch(opcionAerolinea) {
         case 1:
             aerolineaSeleccionada = paisSeleccionado.getAerolinea1();
@@ -460,11 +884,22 @@ void Menu::comprar_vuelo()
     cout << "Pais: " << paisSeleccionado.getNombre() << endl;
     cout << "Aerolinea: " << aerolineaSeleccionada << endl;
 
-    if (!pasaporte.solicitarPasaporte())
-    {
-        cout << "\nNo se pudo completar la compra debido a problemas con la verificacion." << endl;
-        return;
+    // VISA: solo verificación
+    if (paisRequiereVisa(paisSeleccionado.getNombre())) {
+        cout << "\nADVERTENCIA: El pais de destino requiere VISA." << endl;
+        if (!clienteActual->tieneVisaPara(paisSeleccionado.getNombre())) {
+            cout << "Usted NO tiene registrada una VISA para este pais." << endl;
+            cout << "Primero debe registrar su VISA en la opcion 'REGISTRAR VISA' del menu." << endl;
+            return;
+        } else {
+            cout << "VISA valida registrada para este pais. " << endl;
+        }
     }
+
+    // Fecha del vuelo
+    String fechaVuelo;
+    cout << "\nIngrese fecha del vuelo (dd/mm/aaaa): ";
+    cin >> fechaVuelo;
 
     cout << "\nPuede continuar con su compra." << endl;
 
@@ -480,14 +915,15 @@ void Menu::comprar_vuelo()
         return;
     }
 
-    Horario &hSel = paisSeleccionado.getHorario(opcionHorario - 1);
+    int indexHorario = opcionHorario - 1;
+    Horario &hSel = paisSeleccionado.getHorario(indexHorario);
 
     int cantidadAsientos;
-    cout << "Ingrese la cantidad de asientos a reservar: ";
+    cout << "Ingrese la cantidad de asientos a reservar (max 10): ";
     cin >> cantidadAsientos;
 
-    if(cantidadAsientos <= 0) {
-        cout << "Cantidad invalida." << endl;
+    if(cantidadAsientos <= 0 || cantidadAsientos > 10) {
+        cout << "Cantidad invalida (debe ser entre 1 y 10)." << endl;
         return;
     }
 
@@ -497,10 +933,20 @@ void Menu::comprar_vuelo()
         return;
     }
 
-    // Mostrar mapa de asientos
     hSel.mostrarMapaAsientos();
 
     cout << "\nAhora seleccione la posicion de cada asiento (fila y columna)." << endl;
+
+    Vuelo vuelo(
+        paisSeleccionado.getNombre(),
+        aerolineaSeleccionada,
+        hSel.getHoraSalida(),
+        hSel.getHoraLlegada(),
+        fechaVuelo,
+        0,
+        indexPais,
+        indexHorario
+    );
 
     int reservados = 0;
     while(reservados < cantidadAsientos)
@@ -514,6 +960,7 @@ void Menu::comprar_vuelo()
 
         if(hSel.reservarAsientoPosicion(fila, columna))
         {
+            vuelo.agregarAsiento(fila, columna); // guardamos la posicion en el boleto
             reservados++;
             hSel.mostrarMapaAsientos();
         }
@@ -525,61 +972,360 @@ void Menu::comprar_vuelo()
 
     cout << "\nCompra realizada con exito!" << endl;
 
-    Vuelo vuelo(
-        paisSeleccionado.getNombre(),
-        aerolineaSeleccionada,
-        hSel.getHoraSalida(),
-        hSel.getHoraLlegada(),
-        cantidadAsientos
-    );
-
-    vuelo.mostrarBoleto();
+    clienteActual->agregarBoleto(vuelo);   // guardamos el boleto
+    vuelo.mostrarBoleto();                 // mostramos el boleto
 }
 
+// =============================
+// MODIFICAR BOLETO
+// =============================
 void Menu::modificar_voleto()
 {
-    cout << "Opcion no disponible por el momento." << endl;
+    if (clienteActual == 0) {
+        cout << "Debe iniciar sesion para modificar un boleto." << endl;
+        return;
+    }
+
+    int num = clienteActual->getNumBoletos();
+    if (num == 0) {
+        cout << "No tiene boletos para modificar." << endl;
+        return;
+    }
+
+    cout << "\n--- MODIFICAR BOLETO ---" << endl;
+    cout << "Boletos disponibles:\n";
+
+    for (int i = 0; i < num; i++) {
+        Vuelo* vbTmp = clienteActual->obtenerBoleto(i);
+        cout << (i+1) << ". Destino: " << vbTmp->getPaisDestino()
+             << " | Fecha: " << vbTmp->getFecha()
+             << " | " << vbTmp->getHoraSalida() << " - " << vbTmp->getHoraLlegada()
+             << " | Asientos: " << vbTmp->getCantidad()
+             << endl;
+    }
+
+    int opcionBoleto;
+    cout << "\nSeleccione el numero de boleto a modificar: ";
+    cin >> opcionBoleto;
+
+    if (opcionBoleto < 1 || opcionBoleto > num) {
+        cout << "Opcion de boleto invalida." << endl;
+        return;
+    }
+
+    Vuelo* vb = clienteActual->obtenerBoleto(opcionBoleto - 1);
+    if (!vb) {
+        cout << "Error interno al acceder al boleto." << endl;
+        return;
+    }
+
+    int pIndex = vb->getIndexPais();
+    int hIndex = vb->getIndexHorario();
+
+    if (pIndex < 0 || pIndex >= 7 || hIndex < 0 || hIndex > 2) {
+        cout << "Error: indices de pais/horario invalidos para este boleto." << endl;
+        return;
+    }
+
+    char resp;
+    bool cambioHorario = false;
+    bool cambioFecha = false;
+
+    // 1) MODIFICAR FECHA
+    cout << "\nFecha actual: " << vb->getFecha() << endl;
+    cout << "¿Desea modificar la fecha? (s/n): ";
+    cin >> resp;
+
+    if (resp == 's' || resp == 'S') {
+        String nuevaFecha;
+        cout << "Nueva fecha (dd/mm/aaaa): ";
+        cin >> nuevaFecha;
+        vb->setFecha(nuevaFecha);
+        cout << "Fecha actualizada." << endl;
+        cambioFecha = true;
+    }
+
+    // 2) MODIFICAR HORARIO
+    if (cambioFecha) {
+        cout << "\nComo ha cambiado la fecha, seleccione el horario para ese dia." << endl;
+        cout << "Horarios disponibles para " << paises[pIndex].getNombre() << ":\n";
+        paises[pIndex].mostrarHorarios();
+
+        int nuevoHor;
+        cout << "Seleccione nuevo horario (1-3): ";
+        cin >> nuevoHor;
+
+        if (nuevoHor < 1 || nuevoHor > 3) {
+            cout << "Horario invalido, se mantiene el horario anterior." << endl;
+        } else {
+            int nuevoIndex = nuevoHor - 1;
+
+            if (nuevoIndex != hIndex) {
+                Horario &oldH = paises[pIndex].getHorario(hIndex);
+                Horario &newH = paises[pIndex].getHorario(nuevoIndex);
+
+                int cant = vb->getCantidad();
+
+                if (cant > newH.getAsientosDisponibles()) {
+                    cout << "No hay suficientes asientos en el nuevo horario para mantener la misma cantidad." << endl;
+                    cout << "No se cambia el horario (solo se cambio la fecha)." << endl;
+                } else {
+                    for (int i = 0; i < cant; i++) {
+                        int f = vb->getFilaAsiento(i);
+                        int c = vb->getColumnaAsiento(i);
+                        if (f != -1 && c != -1) {
+                            oldH.liberarAsientoPosicion(f, c);
+                        }
+                    }
+
+                    cout << "\nSeleccione las nuevas posiciones de asientos para el nuevo horario:" << endl;
+                    newH.mostrarMapaAsientos();
+
+                    for (int i = 0; i < cant; i++) {
+                        int f, c;
+                        bool reservado = false;
+                        do {
+                            cout << "\nAsiento " << (i+1) << " de " << cant << endl;
+                            cout << "Fila (1-10): ";
+                            cin >> f;
+                            cout << "Columna (1-6): ";
+                            cin >> c;
+
+                            if (newH.reservarAsientoPosicion(f, c)) {
+                                vb->setAsiento(i, f, c);
+                                reservado = true;
+                                newH.mostrarMapaAsientos();
+                            } else {
+                                cout << "No se pudo reservar esa posicion. Intente otra." << endl;
+                            }
+                        } while (!reservado);
+                    }
+
+                    vb->setHoraSalida(newH.getHoraSalida());
+                    vb->setHoraLlegada(newH.getHoraLlegada());
+                    vb->setIndexHorario(nuevoIndex);
+                    hIndex = nuevoIndex;
+                    cambioHorario = true;
+
+                    cout << "Horario y asientos actualizados para el nuevo horario." << endl;
+                }
+            } else {
+                cout << "Se mantiene el mismo horario (solo ha cambiado la fecha)." << endl;
+            }
+        }
+    } else {
+        cout << "\nHorario actual: " << vb->getHoraSalida()
+             << " - " << vb->getHoraLlegada() << endl;
+        cout << "¿Desea cambiar a otro horario disponible? (s/n): ";
+        cin >> resp;
+
+        if (resp == 's' || resp == 'S') {
+            cout << "\nHorarios disponibles para " << paises[pIndex].getNombre() << ":\n";
+            paises[pIndex].mostrarHorarios();
+
+            int nuevoHor;
+            cout << "Seleccione nuevo horario (1-3): ";
+            cin >> nuevoHor;
+
+            if (nuevoHor < 1 || nuevoHor > 3) {
+                cout << "Horario invalido, no se cambia el horario." << endl;
+            } else {
+                int nuevoIndex = nuevoHor - 1;
+
+                if (nuevoIndex != hIndex) {
+                    Horario &oldH = paises[pIndex].getHorario(hIndex);
+                    Horario &newH = paises[pIndex].getHorario(nuevoIndex);
+
+                    int cant = vb->getCantidad();
+
+                    if (cant > newH.getAsientosDisponibles()) {
+                        cout << "No hay suficientes asientos en el nuevo horario para mantener la misma cantidad." << endl;
+                        cout << "No se cambia el horario." << endl;
+                    } else {
+                        for (int i = 0; i < cant; i++) {
+                            int f = vb->getFilaAsiento(i);
+                            int c = vb->getColumnaAsiento(i);
+                            if (f != -1 && c != -1) {
+                                oldH.liberarAsientoPosicion(f, c);
+                            }
+                        }
+
+                        cout << "\nSeleccione las nuevas posiciones de asientos para el nuevo horario:" << endl;
+                        newH.mostrarMapaAsientos();
+
+                        for (int i = 0; i < cant; i++) {
+                            int f, c;
+                            bool reservado = false;
+                            do {
+                                cout << "\nAsiento " << (i+1) << " de " << cant << endl;
+                                cout << "Fila (1-10): ";
+                                cin >> f;
+                                cout << "Columna (1-6): ";
+                                cin >> c;
+
+                                if (newH.reservarAsientoPosicion(f, c)) {
+                                    vb->setAsiento(i, f, c);
+                                    reservado = true;
+                                    newH.mostrarMapaAsientos();
+                                } else {
+                                    cout << "No se pudo reservar esa posicion. Intente otra." << endl;
+                                }
+                            } while (!reservado);
+                        }
+
+                        vb->setHoraSalida(newH.getHoraSalida());
+                        vb->setHoraLlegada(newH.getHoraLlegada());
+                        vb->setIndexHorario(nuevoIndex);
+                        hIndex = nuevoIndex;
+                        cambioHorario = true;
+
+                        cout << "Horario y asientos actualizados para el nuevo horario." << endl;
+                    }
+                } else {
+                    cout << "Eligio el mismo horario, no se modifican los asientos." << endl;
+                }
+            }
+        }
+    }
+
+    // 3) MODIFICAR ASIENTOS SOLO SI NO CAMBIO HORARIO
+    if (!cambioHorario) {
+        cout << "\nAsientos actuales: " << vb->getCantidad() << endl;
+        cout << "¿Desea cambiar cantidad y posiciones de asientos? (s/n): ";
+        cin >> resp;
+
+        if (resp == 's' || resp == 'S') {
+            Horario &h = paises[pIndex].getHorario(hIndex);
+
+            int cantActual = vb->getCantidad();
+            int asientosLibres = h.getAsientosDisponibles() + cantActual;
+
+            int nuevaCant;
+            cout << "Nueva cantidad de asientos (max 10): ";
+            cin >> nuevaCant;
+
+            if (nuevaCant <= 0 || nuevaCant > 10) {
+                cout << "Cantidad invalida, no se modifica." << endl;
+            } else if (nuevaCant > asientosLibres) {
+                cout << "No hay suficientes asientos libres en este horario para esa cantidad." << endl;
+                cout << "No se modifican los asientos." << endl;
+            } else {
+                for (int i = 0; i < cantActual; i++) {
+                    int f = vb->getFilaAsiento(i);
+                    int c = vb->getColumnaAsiento(i);
+                    if (f != -1 && c != -1) {
+                        h.liberarAsientoPosicion(f, c);
+                    }
+                }
+
+                vb->setCantidadAsientos(nuevaCant);
+
+                cout << "\nSeleccione las nuevas posiciones de asientos:" << endl;
+                h.mostrarMapaAsientos();
+
+                for (int i = 0; i < nuevaCant; i++) {
+                    int f, c;
+                    bool reservado = false;
+                    do {
+                        cout << "\nAsiento " << (i+1) << " de " << nuevaCant << endl;
+                        cout << "Fila (1-10): ";
+                        cin >> f;
+                        cout << "Columna (1-6): ";
+                        cin >> c;
+
+                        if (h.reservarAsientoPosicion(f, c)) {
+                            vb->setAsiento(i, f, c);
+                            reservado = true;
+                            h.mostrarMapaAsientos();
+                        } else {
+                            cout << "No se pudo reservar esa posicion. Intente otra." << endl;
+                        }
+                    } while (!reservado);
+                }
+
+                cout << "Asientos actualizados." << endl;
+            }
+        }
+    }
+
+    cout << "\nBoleto modificado final:\n";
+    vb->mostrarBoleto();
 }
 
 void Menu::menuPrincipal()
 {
-    int opcion;
+    int opcionLogin;
 
     do {
-        cout << "\n--- AEROLINEA UCSP ---" << endl;
-        cout << endl;
-        cout << "1. BUSCAR VUELO" << endl;
-        cout << "2. COMPRAR VUELO" << endl;
-        cout << "3. MODIFICAR VOLETO" << endl;
-        cout << "4. SALIR" << endl;
-        cout << endl;
+        cout << "\n=== SISTEMA DE AEROLINEA UCSP ===" << endl;
+        cout << "1. Iniciar sesion" << endl;
+        cout << "2. Registrarse" << endl;
+        cout << "3. Salir" << endl;
         cout << "Opcion: ";
-        cin >> opcion;hyrjyfhfhfbnh
+        cin >> opcionLogin;
 
-        switch(opcion) {
+        switch(opcionLogin) {
         case 1:
-            buscar_vuelo();
+            iniciarSesion();
+            if (clienteActual != 0) {
+                int opcion;
+                do {
+                    cout << "\n--- MENU PRINCIPAL ---" << endl;
+                    cout << "Cliente: " << clienteActual->getNombres()
+                         << " " << clienteActual->getApellidos() << endl;
+                    cout << "1. MOSTRAR BOLETOS" << endl;
+                    cout << "2. COMPRAR VUELO" << endl;
+                    cout << "3. MODIFICAR BOLETO" << endl;
+                    cout << "4. REGISTRAR VISA" << endl;
+                    cout << "5. Cerrar sesion" << endl;
+                    cout << "Opcion: ";
+                    cin >> opcion;
+
+                    switch(opcion) {
+                    case 1:
+                        mostrar_boletos();
+                        break;
+                    case 2:
+                        comprar_vuelo();
+                        break;
+                    case 3:
+                        modificar_voleto();
+                        break;
+                    case 4:
+                        registrarVisaCliente();
+                        break;
+                    case 5:
+                        cout << "Cerrando sesion..." << endl;
+                        break;
+                    default:
+                        cout << "Opcion no valida!" << endl;
+                        break;
+                    }
+                } while(opcion != 5);
+
+                clienteActual = 0; // cerrar sesion
+            }
             break;
+
         case 2:
-            comprar_vuelo();
+            registrarCliente();
             break;
+
         case 3:
-            modificar_voleto();
-            break;
-        case 4:
             cout << "Saliendo del sistema..." << endl;
             break;
+
         default:
             cout << "Opcion no valida!" << endl;
             break;
         }
-    } while (opcion != 4);
+
+    } while (opcionLogin != 3);
 }
 
 //-----------------------------------------
 int main()
 {
-    srand(time(nullptr)); // semilla para rand()
     Menu s1;
     s1.menuPrincipal();
     return 0;
