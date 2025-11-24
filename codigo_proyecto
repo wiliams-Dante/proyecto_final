@@ -4,7 +4,6 @@ using namespace std;
 
 // =============================
 // Clase base Documentos
-// =============================
 class Documentos {
 protected:
     string numero;  // numero de documento
